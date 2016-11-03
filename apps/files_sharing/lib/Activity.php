@@ -42,6 +42,7 @@ class Activity implements IExtension {
 	 */
 	const TYPE_PUBLIC_LINKS = 'public_links';
 	const TYPE_REMOTE_SHARE = 'remote_share';
+	const TYPE_EMAIL_SHARE = 'mail_share';
 	const TYPE_SHARED = 'shared';
 
 	/**
@@ -73,6 +74,9 @@ class Activity implements IExtension {
 	const SUBJECT_LINK_BY_EXPIRED = 'link_by_expired';
 
 	const SUBJECT_SHARED_EMAIL = 'shared_with_email';
+	const SUBJECT_SHARED_FILE_BY_EMAIL_DOWNLOADED = 'file_shared_with_email_downloaded';
+	const SUBJECT_SHARED_FOLDER_BY_EMAIL_DOWNLOADED = 'folder_shared_with_email_downloaded';
+
 	const SUBJECT_SHARED_WITH_BY = 'shared_with_by';
 	const SUBJECT_UNSHARED_BY = 'unshared_by';
 
@@ -114,6 +118,7 @@ class Activity implements IExtension {
 			self::TYPE_SHARED => (string) $l->t('A file or folder has been <strong>shared</strong>'),
 			self::TYPE_REMOTE_SHARE => (string) $l->t('A file or folder was shared from <strong>another server</strong>'),
 			self::TYPE_PUBLIC_LINKS => (string) $l->t('A public shared file or folder was <strong>downloaded</strong>'),
+			self::TYPE_EMAIL_SHARE => (string) $l->t('A file or folder shared by mail was <strong>downloaded</strong>'),
 		);
 	}
 
@@ -132,6 +137,7 @@ class Activity implements IExtension {
 
 		if ($method === self::METHOD_STREAM) {
 			$defaultTypes[] = self::TYPE_PUBLIC_LINKS;
+			$defaultTypes[] = self::TYPE_EMAIL_SHARE;
 		}
 
 		return $defaultTypes;
@@ -150,6 +156,7 @@ class Activity implements IExtension {
 			case self::TYPE_REMOTE_SHARE:
 				return 'icon-share';
 			case self::TYPE_PUBLIC_LINKS:
+			case self::TYPE_EMAIL_SHARE:
 				return 'icon-download';
 		}
 
@@ -246,8 +253,13 @@ class Activity implements IExtension {
 				return (string) $l->t('%2$s shared %1$s with you', $params);
 			case self::SUBJECT_UNSHARED_BY:
 				return (string) $l->t('%2$s removed the share for %1$s', $params);
+
 			case self::SUBJECT_SHARED_EMAIL:
 				return (string) $l->t('You shared %1$s with %2$s', $params);
+			case self::SUBJECT_SHARED_FILE_BY_EMAIL_DOWNLOADED:
+				return (string) $l->t('File %1$s shared by email with %2$s was downloaded', $params);
+			case self::SUBJECT_SHARED_FOLDER_BY_EMAIL_DOWNLOADED:
+				return (string) $l->t('Folder %1$s shared by email with %2$s was downloaded', $params);
 		}
 
 		return false;
@@ -298,8 +310,12 @@ class Activity implements IExtension {
 
 			case self::SUBJECT_SHARED_WITH_BY:
 				return (string) $l->t('Shared by %2$s', $params);
+
 			case self::SUBJECT_SHARED_EMAIL:
 				return (string) $l->t('Shared with %2$s', $params);
+			case self::SUBJECT_SHARED_FILE_BY_EMAIL_DOWNLOADED:
+			case self::SUBJECT_SHARED_FOLDER_BY_EMAIL_DOWNLOADED:
+				return (string) $l->t('Downloaded by %2$s', $params);
 
 			default:
 				return false;
@@ -312,6 +328,7 @@ class Activity implements IExtension {
 	 * Currently known types are:
 	 * * file		=> will strip away the path of the file and add a tooltip with it
 	 * * username	=> will add the avatar of the user
+	 * * email	    => will add a mailto link
 	 *
 	 * @param string $app
 	 * @param string $text
@@ -347,10 +364,11 @@ class Activity implements IExtension {
 						1 => 'username',
 						2 => '',
 					];
-				case self::SUBJECT_SHARED_EMAIL:
+				case self::SUBJECT_SHARED_FILE_BY_EMAIL_DOWNLOADED:
+				case self::SUBJECT_SHARED_FOLDER_BY_EMAIL_DOWNLOADED:
 					return array(
 						0 => 'file',
-						1 => '',// 'email' is neither supported nor planned for now
+						1 => 'email',
 					);
 
 				case self::SUBJECT_SHARED_USER_SELF:
