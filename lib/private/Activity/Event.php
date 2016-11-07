@@ -70,6 +70,8 @@ class Event implements IEvent {
 	/** @var string */
 	protected $icon = '';
 
+	/** @var bool */
+	protected $isMulti = false;
 	/** @var IValidator */
 	protected $richValidator;
 
@@ -467,6 +469,25 @@ class Event implements IEvent {
 	 */
 	public function getIcon() {
 		return $this->icon;
+	}
+
+	/**
+	 * @param bool $isMulti
+	 * @since 9.2.0
+	 */
+	public function setIsMultiEvent($isMulti) {
+		if (!is_bool($isMulti)) {
+			throw new \InvalidArgumentException('The given multi status is invalid');
+		}
+		$this->isMulti = (bool) $isMulti;
+	}
+
+	/**
+	 * @return bool
+	 * @since 9.2.0
+	 */
+	public function isMultiEvent() {
+		return $this->isMulti;
 	}
 
 	/**

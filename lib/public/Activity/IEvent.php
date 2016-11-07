@@ -293,6 +293,18 @@ interface IEvent {
 	public function getIcon();
 
 	/**
+	 * @param bool $isMulti
+	 * @since 9.2.0
+	 */
+	public function setIsMultiEvent($isMulti);
+
+	/**
+	 * @return bool
+	 * @since 9.2.0
+	 */
+	public function isMultiEvent();
+
+	/**
 	 * @return bool
 	 * @since 9.2.0
 	 */
